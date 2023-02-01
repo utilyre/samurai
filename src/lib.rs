@@ -14,17 +14,17 @@ impl SemVer {
     }
 
     pub fn from(s: &str) -> Result<Self, &'static str> {
-        let versions: Vec<_> = s
+        let parts: Vec<_> = s
             .split('.')
             .map(|part| part.parse::<u32>().unwrap())
             .take(3)
             .collect();
 
-        let major = versions
+        let major = parts
             .get(0)
-            .ok_or("couldn't extract the major version")?;
-        let minor = versions.get(1).unwrap_or(&0);
-        let patch = versions.get(2).unwrap_or(&0);
+            .ok_or("couldn't extract the major part")?;
+        let minor = parts.get(1).unwrap_or(&0);
+        let patch = parts.get(2).unwrap_or(&0);
 
         Ok(Self::new(*major, *minor, *patch))
     }
