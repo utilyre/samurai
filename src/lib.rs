@@ -13,16 +13,17 @@ impl SemVer {
         }
     }
 
-    pub fn from(s: &str) -> Result<Self, &'static str> {
+    pub fn from(s: &str) -> Result<Self, String> {
         let parts: Vec<_> = s
             .split('.')
-            .map(|part| part.parse::<u32>().unwrap())
             .take(3)
-            .collect();
+            .map(|part| {
+                part.parse()
+                    .or_else(|_| Err(format!("cannot parse `{}` as u32", part)))
+            })
+            .collect::<Result<Vec<_>, _>>()?;
 
-        let major = parts
-            .get(0)
-            .ok_or("couldn't extract the major part")?;
+        let major = parts.get(0).ok_or("cannot extract the major part")?;
         let minor = parts.get(1).unwrap_or(&0);
         let patch = parts.get(2).unwrap_or(&0);
 
