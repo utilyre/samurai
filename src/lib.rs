@@ -153,4 +153,27 @@ mod tests {
         let v2 = SemVer::new(8, 81, 20);
         assert!(v1 != v2);
     }
+
+    #[test]
+    fn cmp_two_versions_in_string_form() {
+        let v = SemVer::from("7.8.9").unwrap();
+        assert!(v.check("<8.5.8").unwrap());
+
+        let v = SemVer::from("5.2.8").unwrap();
+        assert!(v.check(">5.1.9").unwrap());
+        assert!(v.check(">=5.1.9").unwrap());
+
+        let v = SemVer::from("1.2.7").unwrap();
+        assert!(v.check(">1.2.5").unwrap());
+
+        let v = SemVer::from("6.9.9").unwrap();
+        assert!(v.check("=6.9.9").unwrap());
+    }
+
+    #[test]
+    #[should_panic]
+    fn pass_invalid_pattern_to_check() {
+        let v = SemVer::new(1, 0, 69);
+        v.check("seeya5.8.10").unwrap();
+    }
 }
