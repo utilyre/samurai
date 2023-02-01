@@ -17,6 +17,7 @@ impl SemVer {
         let versions: Vec<_> = s
             .split('.')
             .map(|part| part.parse::<u32>().unwrap())
+            .take(3)
             .collect();
 
         let major = *versions
