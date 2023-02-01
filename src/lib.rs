@@ -111,4 +111,28 @@ mod tests {
     fn error_on_giving_characters_as_version_parts() {
         SemVer::from("hi.there").unwrap();
     }
+
+    #[test]
+    fn cmp_two_instances() {
+        let v1 = SemVer::new(7, 8, 9);
+        let v2 = SemVer::new(8, 5, 8);
+        assert!(v1 < v2);
+
+        let v1 = SemVer::new(5, 2, 8);
+        let v2 = SemVer::new(5, 1, 9);
+        assert!(v1 > v2);
+        assert!(v1 >= v2);
+
+        let v1 = SemVer::new(1, 2, 7);
+        let v2 = SemVer::new(1, 2, 5);
+        assert!(v1 > v2);
+
+        let v1 = SemVer::new(6, 9, 9);
+        let v2 = SemVer::new(6, 9, 9);
+        assert!(v1 == v2);
+
+        let v1 = SemVer::new(8, 1, 20);
+        let v2 = SemVer::new(8, 81, 20);
+        assert!(v1 != v2);
+    }
 }
