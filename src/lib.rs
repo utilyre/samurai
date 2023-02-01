@@ -20,13 +20,13 @@ impl SemVer {
             .take(3)
             .collect();
 
-        let major = *versions
+        let major = versions
             .get(0)
             .ok_or("couldn't extract the major version")?;
-        let minor = *versions.get(1).unwrap_or(&0);
-        let patch = *versions.get(2).unwrap_or(&0);
+        let minor = versions.get(1).unwrap_or(&0);
+        let patch = versions.get(2).unwrap_or(&0);
 
-        Ok(Self::new(major, minor, patch))
+        Ok(Self::new(*major, *minor, *patch))
     }
 }
 
