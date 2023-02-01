@@ -1,3 +1,6 @@
+use std::cmp::Ordering;
+
+#[derive(Eq)]
 pub struct SemVer {
     major: u32,
     minor: u32,
@@ -28,6 +31,44 @@ impl SemVer {
         let patch = parts.get(2).unwrap_or(&0);
 
         Ok(Self::new(*major, *minor, *patch))
+    }
+}
+
+impl PartialEq for SemVer {
+    fn eq(&self, other: &Self) -> bool {
+        self.major == other.major && self.minor == other.minor && self.patch == other.patch
+    }
+}
+
+impl PartialOrd for SemVer {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for SemVer {
+    fn cmp(&self, other: &Self) -> Ordering {
+        if self.major > other.major {
+            return Ordering::Greater;
+        }
+
+        if self.major == other.major {
+            if self.minor > other.minor {
+                return Ordering::Greater;
+            }
+
+            if self.minor == other.minor {
+                if self.patch > other.patch {
+                    return Ordering::Greater;
+                }
+
+                if self.patch == other.patch {
+                    return Ordering::Equal;
+                }
+            }
+        }
+
+        Ordering::Less
     }
 }
 
