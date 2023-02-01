@@ -25,11 +25,7 @@ impl SemVer {
         let minor = *versions.get(1).unwrap_or(&0);
         let patch = *versions.get(2).unwrap_or(&0);
 
-        Ok(Self {
-            major,
-            minor,
-            patch,
-        })
+        Ok(Self::new(major, minor, patch))
     }
 }
 
