@@ -64,4 +64,10 @@ mod tests {
     fn error_on_empty_string_instantiation() {
         SemVer::from("").unwrap();
     }
+
+    #[test]
+    #[should_panic]
+    fn error_on_giving_characters_as_version_parts() {
+        SemVer::from("hi.there").unwrap();
+    }
 }
