@@ -32,6 +32,24 @@ impl SemVer {
 
         Ok(Self::new(*major, *minor, *patch))
     }
+
+    pub fn check(&self, pattern: &str) -> Result<bool, String> {
+        let Some(version_start) = pattern.find(|ch: char| ch.is_numeric()) else {
+            return Err(format!("cannot extract the major part"));
+        };
+
+        let operator = &pattern[..version_start];
+        let other = Self::from(&pattern[version_start..])?;
+
+        match operator {
+            "=" => Ok(self == &other),
+            "<" => Ok(self < &other),
+            ">" => Ok(self > &other),
+            "<=" => Ok(self <= &other),
+            ">=" => Ok(self >= &other),
+            _ => Err(format!("operator `{}` not found", operator)),
+        }
+    }
 }
 
 impl PartialEq for SemVer {
