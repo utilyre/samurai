@@ -42,4 +42,25 @@ mod tests {
         assert_eq!(v.minor, 8);
         assert_eq!(v.patch, 9);
     }
+
+    #[test]
+    fn can_instantiate_with_fewer_parts() {
+        let v1 = SemVer::from("10").unwrap();
+
+        assert_eq!(v1.major, 10);
+        assert_eq!(v1.minor, 0);
+        assert_eq!(v1.patch, 0);
+
+        let v2 = SemVer::from("6.9").unwrap();
+
+        assert_eq!(v2.major, 6);
+        assert_eq!(v2.minor, 9);
+        assert_eq!(v2.patch, 0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn error_on_empty_string_instantiation() {
+        SemVer::from("").unwrap();
+    }
 }
