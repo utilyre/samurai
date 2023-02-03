@@ -45,7 +45,7 @@ impl SemVer {
     ///
     /// This function will return an error if...
     ///
-    /// 1. Some parts cannot be parsed as an `u32` integer.
+    /// 1. Some parts cannot be parsed as an [`u32`] integer.
     /// 2. There are more than three version parts.
     ///
     /// # Examples
