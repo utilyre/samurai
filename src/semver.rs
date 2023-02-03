@@ -1,5 +1,7 @@
 use std::cmp::Ordering;
 
+type Result<T> = std::result::Result<T, String>;
+
 #[derive(Eq)]
 pub struct SemVer {
     major: u32,
@@ -16,7 +18,7 @@ impl SemVer {
         }
     }
 
-    pub fn from(s: &str) -> Result<Self, String> {
+    pub fn from(s: &str) -> Result<Self> {
         let parts: Vec<_> = s
             .split('.')
             .take(3)
@@ -24,7 +26,7 @@ impl SemVer {
                 part.parse()
                     .or_else(|_| Err(format!("cannot parse `{}` as u32", part)))
             })
-            .collect::<Result<Vec<_>, _>>()?;
+            .collect::<Result<Vec<_>>>()?;
 
         let major = parts.get(0).ok_or("cannot extract the major part")?;
         let minor = parts.get(1).unwrap_or(&0);
@@ -33,7 +35,7 @@ impl SemVer {
         Ok(Self::new(*major, *minor, *patch))
     }
 
-    pub fn check(&self, pattern: &str) -> Result<bool, String> {
+    pub fn check(&self, pattern: &str) -> Result<bool> {
         let Some(version_start) = pattern.find(|ch: char| ch.is_numeric()) else {
             return Err(format!("cannot extract the major part"));
         };
