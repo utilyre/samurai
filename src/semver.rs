@@ -39,7 +39,7 @@ impl SemVer {
 
     pub fn is_compatible(&self, other: &Self) -> bool {
         if self.major == 0 {
-            return self >= &other && self < &Self::new(0, other.minor + 1, 0);
+            return self.is_featureless(other);
         }
 
         self >= &other && self < &Self::new(other.major + 1, 0, 0)
