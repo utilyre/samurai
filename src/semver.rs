@@ -224,6 +224,14 @@ mod tests {
     }
 
     #[test]
+    fn is_compatible_with_patch_bump_on_beta() {
+        let v1 = SemVer::new(0, 10, 6);
+        let v2 = SemVer::new(0, 10, 5);
+
+        assert!(v1.is_compatible(&v2));
+    }
+
+    #[test]
     fn is_not_compatible_with_minor_bump_on_beta() {
         let v1 = SemVer::new(0, 10, 5);
         let v2 = SemVer::new(0, 9, 20);
