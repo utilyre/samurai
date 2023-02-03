@@ -28,7 +28,9 @@ impl SemVer {
             })
             .collect::<Result<Vec<_>>>()?;
 
-        let major = parts.get(0).ok_or("cannot extract the major part")?;
+        let major = parts
+            .get(0)
+            .expect("should be available due to previous parsing");
         let minor = parts.get(1).unwrap_or(&0);
         let patch = parts.get(2).unwrap_or(&0);
 
