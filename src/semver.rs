@@ -4,12 +4,33 @@ type Result<T> = std::result::Result<T, String>;
 
 #[derive(Eq)]
 pub struct SemVer {
+    // MAJOR version when you make incompatible API changes
+    // MINOR version when you add functionality in a backwards compatible manner
+    // PATCH version when you make backwards compatible bug fixes
+    /// Represents incompatible API changes.
     pub major: u32,
+
+    /// Represents functionality additions in a backwards compatible manner.
     pub minor: u32,
+
+    /// Represents bug fixes in a backwards compatible manner.
     pub patch: u32,
 }
 
 impl SemVer {
+    /// Creates a new [`SemVer`].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use semver::SemVer;
+    ///
+    /// let version = SemVer::new(1, 5, 7);
+    ///
+    /// assert_eq!(version.major, 1);
+    /// assert_eq!(version.minor, 5);
+    /// assert_eq!(version.patch, 7);
+    /// ```
     pub fn new(major: u32, minor: u32, patch: u32) -> Self {
         Self {
             major,
@@ -18,6 +39,26 @@ impl SemVer {
         }
     }
 
+    /// Creates a new [`SemVer`] from the given string.
+    ///
+    /// # Errors
+    ///
+    /// This function will return an error if...
+    ///
+    /// 1. Some parts cannot be parsed as an `u32` integer.
+    /// 2. There are more than three version parts.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use semver::SemVer;
+    ///
+    /// let version = SemVer::from("1.5.7").expect("`1.5.7` should be a valid version");
+    ///
+    /// assert_eq!(version.major, 1);
+    /// assert_eq!(version.minor, 5);
+    /// assert_eq!(version.patch, 7);
+    /// ```
     pub fn from(s: &str) -> Result<Self> {
         let parts: Vec<_> = s
             .split('.')
@@ -40,6 +81,20 @@ impl SemVer {
         Ok(Self::new(*major, *minor, *patch))
     }
 
+    /// Checks whether there haven't been any breaking changes since `other`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use semver::SemVer;
+    ///
+    /// let version = SemVer::from("1.5.7").expect("`1.5.7` should be a valid version");
+    /// let other1 = SemVer::from("1.2.9").expect("`1.2.9` should be a valid version");
+    /// let other2 = SemVer::from("0.8.1").expect("`0.8.1` should be a valid version");
+    ///
+    /// assert!(version.is_compatible(&other1));
+    /// assert!(!version.is_compatible(&other2));
+    /// ```
     pub fn is_compatible(&self, other: &Self) -> bool {
         if self.major == 0 {
             return self.is_featureless(other);
@@ -48,10 +103,42 @@ impl SemVer {
         self >= &other && self < &Self::new(other.major + 1, 0, 0)
     }
 
+    /// Checks whether there haven't been any feature implementations since `other`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use semver::SemVer;
+    ///
+    /// let version = SemVer::from("1.5.7").expect("`1.5.7` should be a valid version");
+    /// let other1 = SemVer::from("1.5.4").expect("`1.5.4` should be a valid version");
+    /// let other2 = SemVer::from("1.6.2").expect("`1.6.2` should be a valid version");
+    ///
+    /// assert!(version.is_featureless(&other1));
+    /// assert!(!version.is_featureless(&other2));
+    /// ```
     pub fn is_featureless(&self, other: &Self) -> bool {
         self >= &other && self < &Self::new(other.major, other.minor + 1, 0)
     }
 
+    /// Checks instance of [`SemVer`] against `pattern`.
+    ///
+    /// You can find a cheat-sheet of patterns [here](https://devhints.io/semver).
+    ///
+    /// # Errors
+    ///
+    /// This function will return an error if it cannot detect a valid pattern.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use semver::SemVer;
+    ///
+    /// let version = SemVer::from("1.5.7").expect("`1.5.7` should be a valid version");
+    ///
+    /// assert!(version.check("^1.2.9").expect("`^1.2.9` should be a valid pattern"));
+    /// assert!(version.check("~1.5.4").expect("`~1.5.4` should be a valid pattern"));
+    /// ```
     pub fn check(&self, pattern: &str) -> Result<bool> {
         let Some(version_start) = pattern.find(|ch: char| ch.is_numeric()) else {
             return Err(format!("cannot extract the major part"));
