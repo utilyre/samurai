@@ -37,7 +37,7 @@ impl SemVer {
         Ok(Self::new(*major, *minor, *patch))
     }
 
-    pub fn is_compatible(&self, other: Self) -> bool {
+    pub fn is_compatible(&self, other: &Self) -> bool {
         if self.major == 0 {
             return self >= &other && self < &Self::new(0, other.minor, 0);
         }
@@ -200,7 +200,7 @@ mod tests {
         let v1 = SemVer::new(8, 10, 5);
         let v2 = SemVer::new(9, 5, 1);
 
-        assert!(!v1.is_compatible(v2));
+        assert!(!v1.is_compatible(&v2));
     }
 
     #[test]
@@ -208,7 +208,7 @@ mod tests {
         let v1 = SemVer::new(8, 10, 5);
         let v2 = SemVer::new(8, 9, 1);
 
-        assert!(v1.is_compatible(v2));
+        assert!(v1.is_compatible(&v2));
     }
 
     #[test]
@@ -216,7 +216,7 @@ mod tests {
         let v1 = SemVer::new(8, 10, 5);
         let v2 = SemVer::new(8, 10, 4);
 
-        assert!(v1.is_compatible(v2));
+        assert!(v1.is_compatible(&v2));
     }
 
     #[test]
@@ -224,6 +224,6 @@ mod tests {
         let v1 = SemVer::new(0, 10, 5);
         let v2 = SemVer::new(0, 9, 20);
 
-        assert!(!v1.is_compatible(v2));
+        assert!(!v1.is_compatible(&v2));
     }
 }
