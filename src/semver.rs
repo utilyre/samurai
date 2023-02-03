@@ -21,12 +21,15 @@ impl SemVer {
     pub fn from(s: &str) -> Result<Self> {
         let parts: Vec<_> = s
             .split('.')
-            .take(3)
             .map(|part| {
                 part.parse()
                     .or_else(|_| Err(format!("cannot parse `{}` as u32", part)))
             })
             .collect::<Result<Vec<_>>>()?;
+
+        if parts.len() > 3 {
+            return Err(format!("too many parts"));
+        }
 
         let major = parts
             .get(0)
@@ -138,6 +141,12 @@ mod tests {
         assert_eq!(v2.patch, 0);
 
         Ok(())
+    }
+
+    #[test]
+    #[should_panic(expected = "too many parts")]
+    fn from_too_many_parts_panics() {
+        SemVer::from("1.5.7.9").unwrap();
     }
 
     #[test]
