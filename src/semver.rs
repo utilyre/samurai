@@ -194,4 +194,36 @@ mod tests {
         let v = SemVer::new(1, 0, 69);
         v.check("seeya5.8.10").unwrap();
     }
+
+    #[test]
+    fn is_not_compatible_with_major_bump() {
+        let v1 = SemVer::new(8, 10, 5);
+        let v2 = SemVer::new(9, 5, 1);
+
+        assert!(!v1.is_compatible(v2));
+    }
+
+    #[test]
+    fn is_compatible_with_minor_bump() {
+        let v1 = SemVer::new(8, 10, 5);
+        let v2 = SemVer::new(8, 9, 1);
+
+        assert!(v1.is_compatible(v2));
+    }
+
+    #[test]
+    fn is_compatible_with_patch_bump() {
+        let v1 = SemVer::new(8, 10, 5);
+        let v2 = SemVer::new(8, 10, 4);
+
+        assert!(v1.is_compatible(v2));
+    }
+
+    #[test]
+    fn is_not_compatible_with_minor_bump_on_beta() {
+        let v1 = SemVer::new(0, 10, 5);
+        let v2 = SemVer::new(0, 9, 20);
+
+        assert!(!v1.is_compatible(v2));
+    }
 }
