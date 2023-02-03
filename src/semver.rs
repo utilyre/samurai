@@ -97,37 +97,41 @@ mod tests {
     use super::*;
 
     #[test]
-    fn from_string() {
-        let v = SemVer::from("1.8.9").unwrap();
+    fn from_string() -> Result<()> {
+        let v = SemVer::from("1.8.9")?;
 
         assert_eq!(v.major, 1);
         assert_eq!(v.minor, 8);
         assert_eq!(v.patch, 9);
+
+        Ok(())
     }
 
     #[test]
-    fn from_less_parts() {
-        let v1 = SemVer::from("10").unwrap();
+    fn from_less_parts() -> Result<()> {
+        let v1 = SemVer::from("10")?;
 
         assert_eq!(v1.major, 10);
         assert_eq!(v1.minor, 0);
         assert_eq!(v1.patch, 0);
 
-        let v2 = SemVer::from("6.9").unwrap();
+        let v2 = SemVer::from("6.9")?;
 
         assert_eq!(v2.major, 6);
         assert_eq!(v2.minor, 9);
         assert_eq!(v2.patch, 0);
+
+        Ok(())
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(expected = "cannot parse")]
     fn from_empty_string_panics() {
         SemVer::from("").unwrap();
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(expected = "as u32")]
     fn from_non_version_panics() {
         SemVer::from("hi.there").unwrap();
     }
@@ -157,23 +161,25 @@ mod tests {
     }
 
     #[test]
-    fn check_against_pattern() {
-        let v = SemVer::from("7.8.9").unwrap();
-        assert!(v.check("<8.5.8").unwrap());
+    fn check_against_pattern() -> Result<()> {
+        let v = SemVer::from("7.8.9")?;
+        assert!(v.check("<8.5.8")?);
 
-        let v = SemVer::from("5.2.8").unwrap();
-        assert!(v.check(">5.1.9").unwrap());
-        assert!(v.check(">=5.1.9").unwrap());
+        let v = SemVer::from("5.2.8")?;
+        assert!(v.check(">5.1.9")?);
+        assert!(v.check(">=5.1.9")?);
 
-        let v = SemVer::from("1.2.7").unwrap();
-        assert!(v.check(">1.2.5").unwrap());
+        let v = SemVer::from("1.2.7")?;
+        assert!(v.check(">1.2.5")?);
 
-        let v = SemVer::from("6.9.9").unwrap();
-        assert!(v.check("=6.9.9").unwrap());
+        let v = SemVer::from("6.9.9")?;
+        assert!(v.check("=6.9.9")?);
+
+        Ok(())
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(expected = "not found")]
     fn check_against_invalid_pattern_panics() {
         let v = SemVer::new(1, 0, 69);
         v.check("seeya5.8.10").unwrap();
