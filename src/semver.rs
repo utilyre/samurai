@@ -95,7 +95,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn can_instantiate_from_string() {
+    fn from_string() {
         let v = SemVer::from("1.8.9").unwrap();
 
         assert_eq!(v.major, 1);
@@ -104,7 +104,7 @@ mod tests {
     }
 
     #[test]
-    fn can_instantiate_with_fewer_parts() {
+    fn from_less_parts() {
         let v1 = SemVer::from("10").unwrap();
 
         assert_eq!(v1.major, 10);
@@ -120,18 +120,18 @@ mod tests {
 
     #[test]
     #[should_panic]
-    fn error_on_empty_string_instantiation() {
+    fn from_empty_string_panics() {
         SemVer::from("").unwrap();
     }
 
     #[test]
     #[should_panic]
-    fn error_on_giving_characters_as_version_parts() {
+    fn from_non_version_panics() {
         SemVer::from("hi.there").unwrap();
     }
 
     #[test]
-    fn cmp_two_instances() {
+    fn ord_two_instances() {
         let v1 = SemVer::new(7, 8, 9);
         let v2 = SemVer::new(8, 5, 8);
         assert!(v1 < v2);
@@ -155,7 +155,7 @@ mod tests {
     }
 
     #[test]
-    fn cmp_two_versions_in_string_form() {
+    fn check_against_pattern() {
         let v = SemVer::from("7.8.9").unwrap();
         assert!(v.check("<8.5.8").unwrap());
 
@@ -172,7 +172,7 @@ mod tests {
 
     #[test]
     #[should_panic]
-    fn pass_invalid_pattern_to_check() {
+    fn check_against_invalid_pattern_panics() {
         let v = SemVer::new(1, 0, 69);
         v.check("seeya5.8.10").unwrap();
     }
