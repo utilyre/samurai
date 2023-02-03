@@ -45,6 +45,10 @@ impl SemVer {
         self >= &other && self < &Self::new(other.major + 1, 0, 0)
     }
 
+    pub fn is_featureless(&self, other: &Self) -> bool {
+        self >= &other && self < &Self::new(other.major, other.minor + 1, 0)
+    }
+
     pub fn check(&self, pattern: &str) -> Result<bool> {
         let Some(version_start) = pattern.find(|ch: char| ch.is_numeric()) else {
             return Err(format!("cannot extract the major part"));
@@ -237,5 +241,29 @@ mod tests {
         let v2 = SemVer::new(0, 9, 20);
 
         assert!(!v1.is_compatible(&v2));
+    }
+
+    #[test]
+    fn is_not_featureless_with_major_bump() {
+        let v1 = SemVer::new(31, 9, 5);
+        let v2 = SemVer::new(30, 10, 20);
+
+        assert!(!v1.is_featureless(&v2));
+    }
+
+    #[test]
+    fn is_not_featureless_with_minor_bump() {
+        let v1 = SemVer::new(30, 11, 5);
+        let v2 = SemVer::new(30, 9, 20);
+
+        assert!(!v1.is_featureless(&v2));
+    }
+
+    #[test]
+    fn is_featureless_with_patch_bump() {
+        let v1 = SemVer::new(30, 11, 21);
+        let v2 = SemVer::new(30, 11, 20);
+
+        assert!(v1.is_featureless(&v2));
     }
 }
