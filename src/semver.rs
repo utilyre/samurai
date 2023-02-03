@@ -59,6 +59,7 @@ impl SemVer {
             ">" => Ok(self > &other),
             "<=" => Ok(self <= &other),
             ">=" => Ok(self >= &other),
+            "^" => Ok(self.is_compatible(&other)),
             _ => Err(format!("operator `{}` not found", operator)),
         }
     }
@@ -184,6 +185,9 @@ mod tests {
 
         let v = SemVer::from("6.9.9")?;
         assert!(v.check("=6.9.9")?);
+
+        let v = SemVer::from("8.10.5")?;
+        assert!(v.check("^8.9.1")?);
 
         Ok(())
     }
