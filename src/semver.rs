@@ -4,9 +4,9 @@ type Result<T> = std::result::Result<T, String>;
 
 #[derive(Eq)]
 pub struct SemVer {
-    major: u32,
-    minor: u32,
-    patch: u32,
+    pub major: u32,
+    pub minor: u32,
+    pub patch: u32,
 }
 
 impl SemVer {
