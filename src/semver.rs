@@ -37,6 +37,14 @@ impl SemVer {
         Ok(Self::new(*major, *minor, *patch))
     }
 
+    pub fn is_compatible(&self, other: Self) -> bool {
+        if self.major == 0 {
+            return self >= &other && self < &Self::new(0, other.minor, 0);
+        }
+
+        self >= &other && self < &Self::new(other.major + 1, 0, 0)
+    }
+
     pub fn check(&self, pattern: &str) -> Result<bool> {
         let Some(version_start) = pattern.find(|ch: char| ch.is_numeric()) else {
             return Err(format!("cannot extract the major part"));
