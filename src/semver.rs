@@ -23,7 +23,7 @@ impl SemVer {
     /// # Examples
     ///
     /// ```
-    /// use semver::SemVer;
+    /// use samurai::SemVer;
     ///
     /// let version = SemVer::new(1, 5, 7);
     ///
@@ -51,7 +51,7 @@ impl SemVer {
     /// # Examples
     ///
     /// ```
-    /// use semver::SemVer;
+    /// use samurai::SemVer;
     ///
     /// let version = SemVer::from("1.5.7").expect("`1.5.7` should be a valid version");
     ///
@@ -86,7 +86,7 @@ impl SemVer {
     /// # Examples
     ///
     /// ```
-    /// use semver::SemVer;
+    /// use samurai::SemVer;
     ///
     /// let version = SemVer::from("1.5.7").expect("`1.5.7` should be a valid version");
     /// let other1 = SemVer::from("1.2.9").expect("`1.2.9` should be a valid version");
@@ -108,7 +108,7 @@ impl SemVer {
     /// # Examples
     ///
     /// ```
-    /// use semver::SemVer;
+    /// use samurai::SemVer;
     ///
     /// let version = SemVer::from("1.5.7").expect("`1.5.7` should be a valid version");
     /// let other1 = SemVer::from("1.5.4").expect("`1.5.4` should be a valid version");
@@ -132,7 +132,7 @@ impl SemVer {
     /// # Examples
     ///
     /// ```
-    /// use semver::SemVer;
+    /// use samurai::SemVer;
     ///
     /// let version = SemVer::from("1.5.7").expect("`1.5.7` should be a valid version");
     ///
