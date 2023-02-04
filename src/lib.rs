@@ -27,5 +27,5 @@
 //! change convey meaning about the underlying code and what has been modified from one version to
 //! the next.
 
-pub mod semver;
-pub use crate::semver::SemVer;
+pub mod version;
+pub use crate::version::Version;
