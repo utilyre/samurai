@@ -1,4 +1,4 @@
-use std::{cmp::Ordering, result};
+use std::{cmp::Ordering, result, str::FromStr};
 
 type Result<T> = result::Result<T, String>;
 
@@ -43,9 +43,9 @@ impl Version {
     /// ```
     /// use samurai::Version;
     ///
-    /// let version = Version::try_from("1.5.7").expect("`1.5.7` should be a valid version");
-    /// let other1 = Version::try_from("1.2.9").expect("`1.2.9` should be a valid version");
-    /// let other2 = Version::try_from("0.8.1").expect("`0.8.1` should be a valid version");
+    /// let version = "1.5.7".parse::<Version>().expect("`1.5.7` should be a valid version");
+    /// let other1 = "1.2.9".parse::<Version>().expect("`1.2.9` should be a valid version");
+    /// let other2 = "0.8.1".parse::<Version>().expect("`0.8.1` should be a valid version");
     ///
     /// assert!(version.is_compatible(&other1));
     /// assert!(!version.is_compatible(&other2));
@@ -65,9 +65,9 @@ impl Version {
     /// ```
     /// use samurai::Version;
     ///
-    /// let version = Version::try_from("1.5.7").expect("`1.5.7` should be a valid version");
-    /// let other1 = Version::try_from("1.5.4").expect("`1.5.4` should be a valid version");
-    /// let other2 = Version::try_from("1.6.2").expect("`1.6.2` should be a valid version");
+    /// let version = "1.5.7".parse::<Version>().expect("`1.5.7` should be a valid version");
+    /// let other1 = "1.5.4".parse::<Version>().expect("`1.5.4` should be a valid version");
+    /// let other2 = "1.6.2".parse::<Version>().expect("`1.6.2` should be a valid version");
     ///
     /// assert!(version.is_featureless(&other1));
     /// assert!(!version.is_featureless(&other2));
@@ -89,7 +89,7 @@ impl Version {
     /// ```
     /// use samurai::Version;
     ///
-    /// let version = Version::try_from("1.5.7").expect("`1.5.7` should be a valid version");
+    /// let version = "1.5.7".parse::<Version>().expect("`1.5.7` should be a valid version");
     ///
     /// assert!(version.check("^1.2.9").expect("`^1.2.9` should be a valid pattern"));
     /// assert!(version.check("~1.5.4").expect("`~1.5.4` should be a valid pattern"));
@@ -100,23 +100,23 @@ impl Version {
         };
 
         let operator = &pattern[..version_start];
-        let other = Self::try_from(&pattern[version_start..])?;
+        let other = &pattern[version_start..].parse::<Self>()?;
 
         match operator {
-            "=" => Ok(self == &other),
-            "<" => Ok(self < &other),
-            ">" => Ok(self > &other),
-            "<=" => Ok(self <= &other),
-            ">=" => Ok(self >= &other),
-            "^" => Ok(self.is_compatible(&other)),
-            "~" => Ok(self.is_featureless(&other)),
+            "=" => Ok(self == other),
+            "<" => Ok(self < other),
+            ">" => Ok(self > other),
+            "<=" => Ok(self <= other),
+            ">=" => Ok(self >= other),
+            "^" => Ok(self.is_compatible(other)),
+            "~" => Ok(self.is_featureless(other)),
             _ => Err(format!("operator `{}` not found", operator)),
         }
     }
 }
 
-impl TryFrom<&str> for Version {
-    type Error = String;
+impl FromStr for Version {
+    type Err = String;
 
     /// Creates a new [`Version`] from the given string.
     ///
@@ -132,14 +132,14 @@ impl TryFrom<&str> for Version {
     /// ```
     /// use samurai::Version;
     ///
-    /// let version = Version::try_from("1.5.7").expect("`1.5.7` should be a valid version");
+    /// let version = "1.5.7".parse::<Version>().expect("`1.5.7` should be a valid version");
     ///
     /// assert_eq!(version.major, 1);
     /// assert_eq!(version.minor, 5);
     /// assert_eq!(version.patch, 7);
     /// ```
-    fn try_from(value: &str) -> result::Result<Self, Self::Error> {
-        let parts: Vec<_> = value
+    fn from_str(s: &str) -> result::Result<Self, Self::Err> {
+        let parts: Vec<_> = s
             .split('.')
             .map(|part| {
                 part.parse()
@@ -205,7 +205,7 @@ mod tests {
 
     #[test]
     fn from_string() -> Result<()> {
-        let v = Version::try_from("1.8.9")?;
+        let v = "1.8.9".parse::<Version>()?;
 
         assert_eq!(v.major, 1);
         assert_eq!(v.minor, 8);
@@ -216,13 +216,13 @@ mod tests {
 
     #[test]
     fn from_less_parts() -> Result<()> {
-        let v1 = Version::try_from("10")?;
+        let v1 = "10".parse::<Version>()?;
 
         assert_eq!(v1.major, 10);
         assert_eq!(v1.minor, 0);
         assert_eq!(v1.patch, 0);
 
-        let v2 = Version::try_from("6.9")?;
+        let v2 = "6.9".parse::<Version>()?;
 
         assert_eq!(v2.major, 6);
         assert_eq!(v2.minor, 9);
@@ -234,19 +234,19 @@ mod tests {
     #[test]
     #[should_panic(expected = "too many parts")]
     fn from_too_many_parts_panics() {
-        Version::try_from("1.5.7.9").unwrap();
+        "1.5.7.9".parse::<Version>().unwrap();
     }
 
     #[test]
     #[should_panic(expected = "cannot parse")]
     fn from_empty_string_panics() {
-        Version::try_from("").unwrap();
+        "".parse::<Version>().unwrap();
     }
 
     #[test]
     #[should_panic(expected = "as u32")]
     fn from_non_version_panics() {
-        Version::try_from("hi.there").unwrap();
+        "hi.there".parse::<Version>().unwrap();
     }
 
     #[test]
@@ -275,23 +275,23 @@ mod tests {
 
     #[test]
     fn check_against_pattern() -> Result<()> {
-        let v = Version::try_from("7.8.9")?;
+        let v = "7.8.9".parse::<Version>()?;
         assert!(v.check("<8.5.8")?);
 
-        let v = Version::try_from("5.2.8")?;
+        let v = "5.2.8".parse::<Version>()?;
         assert!(v.check(">5.1.9")?);
         assert!(v.check(">=5.1.9")?);
 
-        let v = Version::try_from("1.2.7")?;
+        let v = "1.2.7".parse::<Version>()?;
         assert!(v.check(">1.2.5")?);
 
-        let v = Version::try_from("6.9.9")?;
+        let v = "6.9.9".parse::<Version>()?;
         assert!(v.check("=6.9.9")?);
 
-        let v = Version::try_from("8.10.5")?;
+        let v = "8.10.5".parse::<Version>()?;
         assert!(v.check("^8.9.1")?);
 
-        let v = Version::try_from("30.11.21")?;
+        let v = "30.11.21".parse::<Version>()?;
         assert!(v.check("~30.11.20")?);
 
         Ok(())
