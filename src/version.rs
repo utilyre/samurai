@@ -55,7 +55,7 @@ impl Version {
             return self.is_featureless(other);
         }
 
-        self >= &other && self < &Self::new(other.major + 1, 0, 0)
+        self >= other && self < &Self::new(other.major + 1, 0, 0)
     }
 
     /// Checks whether there haven't been any feature implementations since `other`.
@@ -73,7 +73,7 @@ impl Version {
     /// assert!(!version.is_featureless(&other2));
     /// ```
     pub fn is_featureless(&self, other: &Self) -> bool {
-        self >= &other && self < &Self::new(other.major, other.minor + 1, 0)
+        self >= other && self < &Self::new(other.major, other.minor + 1, 0)
     }
 
     /// Checks instance of [`Version`] against `pattern`.
@@ -96,7 +96,7 @@ impl Version {
     /// ```
     pub fn check(&self, pattern: &str) -> Result<bool> {
         let Some(version_start) = pattern.find(|ch: char| ch.is_numeric()) else {
-            return Err(format!("cannot extract the major part"));
+            return Err("cannot extract the major part".to_string());
         };
 
         let operator = &pattern[..version_start];
@@ -143,16 +143,16 @@ impl FromStr for Version {
             .split('.')
             .map(|part| {
                 part.parse()
-                    .or_else(|_| Err(format!("cannot parse `{}` as u32", part)))
+                    .map_err(|_| format!("cannot parse `{}` as u32", part))
             })
             .collect::<Result<Vec<_>>>()?;
 
         if parts.len() > 3 {
-            return Err(format!("too many parts"));
+            return Err("too many parts".to_string());
         }
 
         let major = parts
-            .get(0)
+            .first()
             .expect("should be available due to previous parsing");
         let minor = parts.get(1).unwrap_or(&0);
         let patch = parts.get(2).unwrap_or(&0);
