@@ -118,26 +118,6 @@ impl Version {
 impl FromStr for Version {
     type Err = String;
 
-    /// Creates a new [`Version`] from the given string.
-    ///
-    /// # Errors
-    ///
-    /// This function will return an error if...
-    ///
-    /// 1. Some parts cannot be parsed as an [`u32`] integer.
-    /// 2. There are more than three version parts.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use samurai::Version;
-    ///
-    /// let version = "1.5.7".parse::<Version>().expect("`1.5.7` should be a valid version");
-    ///
-    /// assert_eq!(version.major, 1);
-    /// assert_eq!(version.minor, 5);
-    /// assert_eq!(version.patch, 7);
-    /// ```
     fn from_str(s: &str) -> result::Result<Self, Self::Err> {
         let parts: Vec<_> = s
             .split('.')
